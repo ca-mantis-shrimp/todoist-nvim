@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/7/schema",
+  "title": "Todoist Sync Response",
+  "description": "A Todoist Exhaustive result",
+  "type": "object",
+  "required": ["full_sync", "sync_token"],
+  "propteries": {
+    "full_sync": {"type": "boolean"},
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "color": { "type": "string" },
+          "parent_id": { "type": "string" },
+          "child_order": { "type": "integer" },
+          "collapsed": { "type": "boolean" },
+          "child_order": {"type": "integer"},
+          "is_deleted": {"type": "boolean"},
+          "is_archived": { "type": "boolean" },
+          "is_favorite": { "type": "boolean" },
+          "inbox_project": { "type": "boolean" },
+        }
+      }
+    },
+    "temp_id_mapping": {
+      "type": "object",
+      "properties": {
+        "temp_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "sync_token": {
+      "type": ["string", "null"]
+    },
+  }
+}

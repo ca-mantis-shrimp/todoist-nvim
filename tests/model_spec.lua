@@ -1,5 +1,6 @@
 local model = require("Todoist.model")
 local util = require("Todoist.util")
+
 local test_project = {
 	{
 		is_archived = false,
