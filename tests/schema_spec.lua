@@ -1,7 +1,8 @@
 local schema = require("jsonschema")
+local todoist_sync_schema = require("Todoist.definitions").sync_response_schema
 
 describe("jsonschema testing", function()
-	it("shoudl validate a basic schema", function()
+	it("should validate a basic schema", function()
 		-- Note: Cache the result of the schema compilation as this is quite expensive
 		local myvalidator = schema.generate_validator({
 			type = "array",

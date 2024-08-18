@@ -8,31 +8,181 @@
       "items": {
         "type": "object",
         "properties": {
-          "is_archived": { "type": "boolean" },
-          "color": { "type": "string" },
-          "shared": { "type": "boolean" },
-          "inbox_project": { "type": "boolean" },
           "id": { "type": "string" },
-          "collapsed": { "type": "boolean" },
-          "child_order": { "type": "integer" },
           "name": { "type": "string" },
-          "is_deleted": { "type": "boolean" },
+          "color": { "type": "string" },
           "parent_id": { 
             "type": ["string", "null"]
           },
+          "child_order": { "type": "integer" },
+          "collapsed": { "type": "boolean" },
+          "shared": { "type": "boolean" },
+          "can_assign_tasks": { "type": "boolean" },
+          "inbox_project": { "type": "boolean" },
+          "is_deleted": { "type": "boolean" },
+          "is_archived": { "type": "boolean" },
+          "is_favorite": { "type": "boolean" },
+          "sync_id": {"type": ["string", "null"]},
+          "inbox_project": { "type": "boolean" },
+          "inbox_project": { "type": "boolean" },
+          "team_inbox": { "type": "boolean" },
           "view_style": { "type": "string" }
         },
-        "required": ["is_archived", "color", "shared", "inbox_project", "id", "collapsed", "child_order", "name", "is_deleted", "view_style"],
-        "additionalProperties": true
+        "required": ["name", "id"],
       }
     },
-    "full_sync": { "type": "boolean" },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "project_id": { "type": "string" },
+          "section_order": { "type": "integer" },
+          "collapsed": { "type": "boolean" },
+          "sync_id": {"type": "string"},
+          "is_archived": { "type": "boolean" },
+          "archived_at": { "type": ["string", "null"] },
+          "added_at": { "type": "string" },
+        },
+        "required": ["name", "id"],
+      }
+    },
+    "project_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "posted_uid": { "type": "integer"},
+          "project_id": { "type": "string" },
+          "content": { "type": "string" },
+          "is_deleted": { "type": "boolean" },
+          "posted_at": { "type": "string" },
+          "reactions": {
+            "type": "array"
+            "items": {
+              "type": "object",
+              "properties": {
+                "emoji": { "type": "string" },
+                "uid": { "type": "integer" },
+              },
+            }
+          },
+        },
+        "required": ["content", "id"],
+      }
+    },
+    "items": {
+      "type": "array",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "content": { "type": "string" },
+        "description": { "type": "string" },
+        "due": { "type": "object"
+          "properties": {}
+          "date": { "type": "string" },
+          "timezone": { "type": ["string", "null"] },
+          "string": { "type": "string" },
+          "lang": { "type": "string" },
+          "is_recurring": { "type": "boolean" },
+        },
+        "priority": { "type": "integer" },
+        "child_order": { "type": "integer" },
+        "section_id": { "type": ["string", "null"] },
+        "day_order": { "type": "integer" },
+        "collapsed": { "type": "boolean" },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+          },
+        },
+        "added_by_uid": { "type": "string" },
+        "assigned_by_uid": { "type": "string" },
+        "responsible_uid": { "type": "string" },
+        "checked": { "type": "boolean" },
+        "is_deleted": { "type": "boolean" },
+        "sync_id": { "type": "string" },
+        "completed_at": { "type": "string" },
+        "added_at": { "type": "string" },
+        "duration": {
+          "type": ["object","null"],
+          "properties": {
+            "amount": { "type": "integer" },
+            "unit": { "type": "string" }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "posted_uid": { "type": "integer"},
+          "item_id": { "type": "string" },
+          "uids_to_notify": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": { "type": "string" },
+          "is_deleted": { "type": "boolean" },
+          "posted_at": { "type": "string" },
+          "reactions": {
+            "type": "array"
+            "items": {
+              "type": "object",
+              "properties": {
+                "emoji": { "type": "string" },
+                "uid": { "type": "integer" },
+              }
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "color": { "type": "string" },
+        "item_order": { "type": "integer" },
+        "is_deleted": { "type": "boolean" },
+        "is_favorite": { "type": "boolean" },
+        }
+      }
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "query": { "type": "string" },
+        "color": { "type": "string" },
+        "item_order": { "type": "integer" },
+        "is_deleted": { "type": "boolean" },
+        "is_favorite": { "type": "boolean" },
+        }
+      }
+    },
     "temp_id_mapping": {
       "type": "object",
-      "additionalProperties": true
     },
-    "sync_token": { "type": "string" }
+    "sync_token": { "type": "string" },
+    "sync_status": {"type": "object"},
+    "full_sync": { "type": "boolean" },
   },
   "required": ["full_sync", "temp_id_mapping", "sync_token"],
-  "additionalProperties": true
 }

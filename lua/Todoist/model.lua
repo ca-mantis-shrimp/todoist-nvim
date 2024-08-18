@@ -1,34 +1,6 @@
 local schema = require("jsonschema")
 M = {}
 
-M.sync_schema = schema.generate_validator({
-	type = "object",
-	properties = {
-		projects = {
-			type = "array",
-			items = {
-				type = "object",
-				properties = {
-					id = { type = "string" },
-					name = { type = "string" },
-					color = { type = "string" },
-					parent_id = { type = "string" },
-					child_id = { type = "string" },
-					collapsed = { type = "string" },
-					shared = { type = "string" },
-					can_assign_tasks = { type = "string" },
-					is_deleted = { type = "string" },
-					is_archived = { type = "string" },
-					sync_id = { type = "string" },
-					inbox_project = { type = "string" },
-					team_inbox = { type = "string" },
-					view_style = { type = "string" },
-				},
-			},
-		},
-	},
-})
-
 ---@param projects table[] #list of projects
 ---@param nodes table<integer, table> #key-value table to add projects to
 ---@return table<integer, table> nodes #the updated key-value table
