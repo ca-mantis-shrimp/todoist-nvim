@@ -38,7 +38,7 @@ local icon_calculators = {
 
 local function add_buffer_lines_from_node(lines, node)
 	assert(node, "Node cannot be nil")
-	assert(type(node.type) == "string", "must have a string type")
+	assert(type(node.type) == "string", "must have a type in the form of a string")
 
 	local icon = icon_calculators[node.type](node)
 

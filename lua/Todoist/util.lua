@@ -43,4 +43,14 @@ M.get_script_dir = function()
 	return str:match("(.*" .. M.get_path_separator() .. ")")
 end
 
+M.run_pipeline = function(opts)
+	local data = opts.data
+
+	for _, fn in ipairs(opts.pipeline) do
+		data = fn(data)
+	end
+
+	return data
+end
+
 return M
