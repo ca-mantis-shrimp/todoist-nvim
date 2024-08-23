@@ -22,6 +22,8 @@ end
 local add_root_projects = function(types)
 	types.root_projects = vim.iter(types.projects):filter(is_root_project):totable()
 
+	table.sort(types.root_projects, is_higher_child_order)
+
 	return types
 end
 
@@ -49,7 +51,7 @@ local add_sections_to_projects = function(types)
 			return note.project_id == project.id
 		end
 
-		project.sections = vim.iter(types.project_notes):filter(is_project_section):totable()
+		project.sections = vim.iter(types.sections):filter(is_project_section):totable()
 
 		return project
 	end
@@ -80,13 +82,9 @@ local set_project_depth
 set_project_depth = function(project, depth)
 	project.depth = depth
 
-	if util.length(project.child_projects) > 0 and depth < 8 then
-		for _, child_project in ipairs(project.child_projects) do
-			set_project_depth(child_project, depth + 1)
-		end
+	for _, child in ipairs(project.child_projects) do
+		set_project_depth(child, depth + 1)
 	end
-
-	return project
 end
 
 local set_project_depths_from_root = function(types)
@@ -115,11 +113,11 @@ get_project_lines = function(project)
 	local lines = {}
 
 	table.insert(lines, get_project_str(project))
-	table.insert(lines, vim.iter(project.comments):map(get_comment_str))
-	table.insert(lines, vim.iter(project.sections):map(get_section_str))
+	table.insert(lines, vim.iter(project.comments):map(get_comment_str):totable())
+	table.insert(lines, vim.iter(project.sections):map(get_section_str):totable())
 
-	if project.child_projects and util.length(project.child_projects) > 0 then
-		for _, child in ipairs(project.children) do
+	if project.child_projects and #project.child_projects > 0 and project.depth < 8 then
+		for _, child in ipairs(project.child_projects) do
 			table.insert(lines, get_project_lines(child))
 		end
 	end
@@ -127,7 +125,7 @@ get_project_lines = function(project)
 	return lines
 end
 local add_project_list_lines = function(types)
-	types.lines = vim.iter(types.root_projects):map(get_project_lines)
+	types.lines = vim.iter(types.root_projects):map(get_project_lines):totable()
 
 	return types
 end
@@ -137,10 +135,18 @@ local add_sync_token_line = function(types)
 	return types
 end
 
-M.add_project_list_string = function(response)
+local flatten_lines = function(types)
+	types.lines = vim.iter(types.lines):flatten(8):totable()
+
+	return types
+end
+
+M.get_project_list_lines = function(response)
 	assert(response.projects, "project list is required")
+	local response_copy = vim.deepcopy(response)
+
 	local updated_response = util.run_pipeline({
-		data = response,
+		data = response_copy,
 		pipeline = {
 			sort_types,
 			add_comments_to_projects,
@@ -150,10 +156,11 @@ M.add_project_list_string = function(response)
 			set_project_depths_from_root,
 			add_project_list_lines,
 			add_sync_token_line,
+			flatten_lines,
 		},
 	})
 
-	return updated_response.lines
+	return updated_response
 end
 
 return M

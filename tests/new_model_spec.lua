@@ -51,7 +51,7 @@ describe("converting Todoist Data into the lines", function()
 			"@test",
 		}
 
-		local converted_nodes = model.add_project_list_string(types)
+		local converted_nodes = model.get_project_list_lines(types)
 
 		assert.are.same(vim.inspect(expected_output), vim.inspect(converted_nodes))
 	end)
