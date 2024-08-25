@@ -8,7 +8,7 @@ local test_project = {
 		parent_id = nil,
 	},
 	{
-		id = "23410392",
+		id = "23410213",
 		child_order = 0,
 		name = "child_project",
 		parent_id = "23410392",
@@ -34,7 +34,7 @@ describe("converting Todoist Data into the lines", function()
 			},
 			sections = {
 				{
-					id = "23410392",
+					id = "2182392",
 					name = "A section",
 					project_id = "220474322",
 					section_order = 0,
@@ -51,7 +51,7 @@ describe("converting Todoist Data into the lines", function()
 			"@test",
 		}
 
-		local converted_nodes = model.get_project_list_lines(types)
+		local converted_nodes = model.add_project_list_lines(types)
 
 		assert.are.same(vim.inspect(expected_output), vim.inspect(converted_nodes))
 	end)
