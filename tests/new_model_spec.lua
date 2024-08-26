@@ -1,4 +1,4 @@
-local model = require("Todoist.new_model")
+local model = require("Todoist.model")
 
 local test_project = {
 	{
@@ -45,14 +45,14 @@ describe("converting Todoist Data into the lines", function()
 		local expected_output = {
 			"# Inbox|>220474322",
 			"+ test comment|>2992679862",
-			"& A section|>23410392",
+			"& A section|>2182392",
 			"# another project|>23410392",
-			"# child_project|>23410392",
+			"## child_project|>23410213",
 			"@test",
 		}
 
 		local converted_nodes = model.add_project_list_lines(types)
 
-		assert.are.same(vim.inspect(expected_output), vim.inspect(converted_nodes))
+		assert.are.same(vim.inspect(expected_output), vim.inspect(converted_nodes.lines))
 	end)
 end)
