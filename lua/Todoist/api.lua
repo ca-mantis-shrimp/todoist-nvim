@@ -10,35 +10,31 @@ local window = require("Todoist.window")
 local filesystem = require("Todoist.filesystem")
 local M = {}
 
-M.download_project_tree_minimal = function()
+M.get_full_project_tree = function()
 	assert(config.api_key, "API key must not be nil for request to work, be sure config was run before this")
 	local todoist_types =
 		request_utilities.process_response(curl.post(request_utilities.create_sync_request(config.api_key)))
 
-	local item_list = model.create_project_node_dictionary({}, todoist_types)
+	filesystem.write_file(
+		vim.fn.stdpath("cache") .. "/Todoist/todoist.json",
+		vim.split(vim.json.encode(todoist_types), "\n")
+	)
 
-	local tree_lines = {}
+	local updated_response = model.add_project_list_lines(todoist_types)
 
-	tree_lines[util.length(tree_lines) + 1] = tostring("@" .. todoist_types.sync_token)
-
-	return tree_lines
+	return updated_response.lines
 end
 M.download_project_tree_to_file = function(sync_token)
 	assert(config.api_key, "API key must not be nil for request to work, be sure config was run before this")
 	local todoist_types =
 		request_utilities.process_response(curl.post(request_utilities.create_sync_request(config.api_key, sync_token)))
 
-	local item_list = model.create_project_node_dictionary({}, todoist_types)
-
 	filesystem.write_file(
-		vim.fn.stdpath("cache") .. "/Todoist/server_items.json",
-		vim.split(vim.json.encode(item_list), "\n")
+		vim.fn.stdpath("cache") .. "/Todoist/full_sync_response" .. os.time() .. ".json",
+		vim.split(vim.json.encode(todoist_types), "\n")
 	)
 
-	local project_tree = tree.create_tree(item_list)
-	local tree_lines = tree_display.get_buffer_lines_from_tree(project_tree)
-
-	tree_lines[util.length(tree_lines) + 1] = tostring("@" .. todoist_types.sync_token)
+	local tree_lines = model.add_project_list_lines(todoist_types)
 
 	return tree_lines
 end
