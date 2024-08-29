@@ -1,5 +1,7 @@
-GET https://api.todoist.com/sync/v9/sync
+POST https://api.todoist.com/sync/v9/sync
 Authorization: Bearer {{TODOIST_API_KEY}}
 
-"sync_token"="*"
-"resource_types"="['projects']"
+{
+	"sync_token" : "*",
+	"resource_types" : ["projects", "project_notes", "sections"]
+}
