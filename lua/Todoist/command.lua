@@ -13,7 +13,7 @@ M.create_all_project_commands = function()
 	end, {})
 
 	vim.api.nvim_create_user_command("TodoistOpenProjectFile", function()
-		local project_file_path = vim.fn.stdpath("cache") .. "/Todoist/client_todoist.projects"
+		local project_file_path = vim.fn.stdpath("cache") .. "/Todoist/todoist.projects"
 		vim.cmd("e " .. project_file_path)
 	end, {})
 end

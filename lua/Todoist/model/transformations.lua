@@ -7,7 +7,7 @@ local add_root_depth = function(project)
 end
 
 local is_root_project = function(project)
-	return not project.parent_id
+	return not project.parent_id or project.parent_id == vim.NIL
 end
 
 local is_higher_child_order = function(type_1, type_2)
@@ -97,7 +97,7 @@ M.add_root_project_list = function(response)
 	table.sort(root_projects, is_higher_child_order)
 
 	response.root_projects = root_projects
-
+	print(vim.inspect(response))
 	return response
 end
 
