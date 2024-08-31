@@ -53,4 +53,10 @@ M.run_pipeline = function(opts)
 	return data
 end
 
+M.print_and_pass = function(opts)
+	print(vim.inspect(opts))
+
+	return opts
+end
+
 return M
