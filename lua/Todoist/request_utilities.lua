@@ -52,18 +52,16 @@ M.todoist_commands = {
 	end,
 }
 
-function M.create_sync_request(api_key, sync_token, resource_types, commands)
+function M.create_project_full_sync_request(opts)
 	local request_body = {
 		url = "https://api.todoist.com/sync/v9/sync",
-		headers = { Authorization = "Bearer " .. api_key },
+		headers = { Authorization = "Bearer " .. opts.api_key },
 		data = {
-			sync_token = sync_token or "*",
-			resource_types = vim.json.encode(resource_types or { "projects", "items", "notes", "sections" }),
+			sync_token = "*",
+			resource_types = vim.json.encode({ "projects", "project_notes", "sections" }),
 		},
 		timeout = 100000,
 	}
-
-	request_body.data.commands = commands
 
 	return request_body
 end
