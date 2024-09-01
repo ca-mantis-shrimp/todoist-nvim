@@ -5,8 +5,25 @@ local commands = require("Todoist.command")
 
 local M = {}
 
+M.config = function(opts)
+	local default_cache_dir = vim.fn.stdpath("cache")
+	setmetatable(opts or {}, {
+		__index = {
+			api_key = os.getenv("TODOIST_API_KEY"),
+			cache_dir = default_cache_dir,
+			project_file_path = (opts.cache_dir or default_cache_dir) .. "/Todoist/todoist.projects",
+			response_path = (opts.cache_dir or default_cache_dir) .. "/Todoist/todoist.json",
+			default_window_type = "active_window",
+			logging = true,
+			indent_on_buf_enter = true,
+		},
+	})
+
+	return opts
+end
+
 function M.setup(opts)
-	config_mod.config(opts)
+	opts = M.config(opts)
 
 	vim.filetype.add({
 		extension = {
@@ -14,17 +31,13 @@ function M.setup(opts)
 		},
 	})
 
-	vim.fn.mkdir(vim.fn.stdpath("cache") .. "/Todoist", "p")
+	vim.fn.mkdir(opts.cache_dir, "p")
 
-	commands.create_all_project_commands()
+	commands.create_all_project_commands(opts)
 
 	if config_mod.indent_on_buf_enter then
-		autocmd.create_indent_autocmd()
+		autocmd.create_indent_autocmd(opts)
 	end
-end
-
-function M.get_all_projects()
-	api.show_project_task_list()
 end
 
 return M

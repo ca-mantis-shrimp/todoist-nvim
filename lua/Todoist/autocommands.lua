@@ -1,6 +1,6 @@
 local M = {}
 --Ensure the autocommands group 'AutoIndentProjects' exists and is clear
-M.create_indent_autocmd = function()
+M.create_indent_autocmd = function(_)
 	vim.api.nvim_create_augroup("AutoIndentProjects", { clear = true })
 
 	-- Create an autocommand for `.projects` files

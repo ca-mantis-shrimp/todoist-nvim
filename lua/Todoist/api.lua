@@ -10,15 +10,12 @@ local window = require("Todoist.window")
 local filesystem = require("Todoist.filesystem")
 local M = {}
 
-M.get_full_project_tree = function()
-	assert(config.api_key, "API key must not be nil for request to work, be sure config was run before this")
+M.get_full_project_tree = function(opts)
+	assert(opts.api_key, "API key must not be nil for request to work, be sure config was run before this")
 	local todoist_types =
-		request_utilities.process_response(curl.post(request_utilities.create_sync_request(config.api_key)))
+		request_utilities.process_response(curl.post(request_utilities.create_sync_request(opts.api_key)))
 
-	filesystem.write_file(
-		vim.fn.stdpath("cache") .. "/Todoist/todoist.json",
-		vim.split(vim.json.encode(todoist_types), "\n")
-	)
+	filesystem.write_file(opts.response_path, vim.split(vim.json.encode(todoist_types), "\n"))
 
 	local updated_response = model.add_project_list_lines(todoist_types)
 
