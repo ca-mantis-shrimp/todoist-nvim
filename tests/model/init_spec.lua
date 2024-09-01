@@ -14,6 +14,12 @@ local test_project = {
 		parent_id = "23410392",
 	},
 	{
+		id = "20898703",
+		child_order = 0,
+		name = "grandchild_project",
+		parent_id = "23410213",
+	},
+	{
 		id = "220474322",
 		child_order = 0,
 		name = "Inbox",
@@ -48,6 +54,7 @@ describe("converting Todoist Data into the lines", function()
 			"& A section|>2182392",
 			"# another project|>23410392",
 			"## child_project|>23410213",
+			"### grandchild_project|>20898703",
 			"@test",
 		}
 

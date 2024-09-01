@@ -97,23 +97,35 @@ M.add_root_project_list = function(response)
 	table.sort(root_projects, is_higher_child_order)
 
 	response.root_projects = root_projects
-	print(vim.inspect(response))
+
 	return response
 end
 
 M.add_project_depth = function(response)
-	local set_project_depth = function(project)
-		local set_child_project_depth
-		set_child_project_depth = function(child)
-			child.depth = project.depth + 1
-
-			if #child.children > 0 then
-				child.children = vim.iter(child.children):map(set_child_project_depth):totable()
-			end
-			return child
+	local set_project_depth
+	set_project_depth = function(project)
+		local is_parent_project = function(potential_parent)
+			return potential_parent.id == project.parent_id
 		end
+		if project.parent_id and project.parent_id ~= vim.NIL then
+			local parent_project = vim.iter(response.projects):find(is_parent_project)
+
+			assert(
+				parent_project,
+				"Was unable to find the parent project for"
+					.. project.id
+					.. project.name
+					.. project.parent_id
+					.. "unable to set depth"
+			)
+
+			project.depth = parent_project.depth + 1
+		else
+			project.depth = 0
+		end
+
 		if #project.children > 0 then
-			project.children = vim.iter(project.children):map(set_child_project_depth):totable()
+			project.children = vim.iter(project.children):map(set_project_depth):totable()
 		end
 
 		return project
