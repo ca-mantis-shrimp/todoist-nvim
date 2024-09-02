@@ -30,8 +30,12 @@ local add_project_lines
 add_project_lines = function(project)
 	local lines = { get_project_str(project) }
 
-	lines = vim.list_extend(lines, vim.iter(project.comments):map(get_comment_str):totable())
-	lines = vim.list_extend(lines, vim.iter(project.sections):map(get_section_str):totable())
+	if project.comments and #project.comments > 0 then
+		lines = vim.list_extend(lines, vim.iter(project.comments):map(get_comment_str):totable())
+	end
+	if project.sections and #project.sections > 0 then
+		lines = vim.list_extend(lines, vim.iter(project.sections):map(get_section_str):totable())
+	end
 
 	if #project.children > 0 then
 		lines = vim.list_extend(lines, vim.iter(project.children):map(add_project_lines):totable())

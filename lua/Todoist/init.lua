@@ -1,5 +1,5 @@
-local autocmd = require("Todoist.autocommands")
-local commands = require("Todoist.command")
+local autocmd = require("Todoist.nvim.autocommands")
+local commands = require("Todoist.nvim.command")
 
 local M = {}
 
@@ -7,12 +7,13 @@ M.config = function(opts)
 	local default_cache_dir = vim.fn.stdpath("cache")
 	setmetatable(opts or {}, {
 		__index = {
-			api_key = os.getenv("TODOIST_API_KEY"),
-			project_file_path = default_cache_dir .. "/Todoist/todoist.projects",
-			response_path = default_cache_dir .. "/Todoist/todoist.json",
-			default_window_type = "active_window",
+			request = { api_key = os.getenv("TODOIST_API_KEY"), provider = "plenary.curl" },
+			storage = {
+				project_file_path = default_cache_dir .. "/Todoist/todoist.projects",
+				response_path = default_cache_dir .. "/Todoist/todoist.json",
+			},
+			ui = { default_window_type = "active_window", indent_on_buf_enter = true },
 			logging = true,
-			indent_on_buf_enter = true,
 		},
 	})
 

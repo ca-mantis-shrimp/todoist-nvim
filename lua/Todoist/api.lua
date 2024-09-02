@@ -1,20 +1,14 @@
-local util = require("Todoist.util")
-local curl = require("plenary.curl")
-local request_utilities = require("Todoist.request_utilities")
+local sync_api = require("Todoist.sync")
 local model = require("Todoist.model")
-local filesystem = require("Todoist.filesystem")
 local M = {}
 
-M.get_full_project_tree = function(opts)
-	assert(opts.api_key, "API key must not be nil for request to work, be sure config was run before this")
-	local todoist_types = util.run_pipeline({
-		data = opts,
-		pipeline = { request_utilities.create_project_full_sync_request, curl.post, request_utilities.process_response },
-	})
+M.send_full_sync_request = function(opts)
+	local todoist_types = sync_api.get_full_project_sync_response(opts)
 
-	filesystem.write_file(opts.response_path, vim.split(vim.json.encode(todoist_types), "\n"))
-
-	local updated_response = model.add_project_list_lines(todoist_types)
+	return todoist_types
+end
+M.get_project_lines = function(opts)
+	local updated_response = model.add_project_list_lines(opts)
 
 	return updated_response.lines
 end

@@ -1,0 +1,1 @@
+return {version=12,pkgs={{source="lazy",name="plenary.nvim",file="community",dir="/home/primary_desktop/Products/todoist-nvim/.repro/data/nvim/lazy/plenary.nvim",spec={"nvim-lua/plenary.nvim",lazy=true,},},},}

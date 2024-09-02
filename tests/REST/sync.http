@@ -1,5 +1,5 @@
 POST https://api.todoist.com/sync/v9/sync
-Authorization: Bearer {{TODOIST_API_KEY}}
+Authorization: Bearer {{TODOIST_TEST_API_KEY}}
 
 {
 	"sync_token" : "*",

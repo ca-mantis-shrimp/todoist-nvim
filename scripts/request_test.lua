@@ -1,5 +1,5 @@
 local config = require("Todoist.config")
-local request = require("Todoist.request_utilities")
+local request = require("Todoist.synci.requests")
 local curl = require("plenary.curl")
 
 local opts = { api_key = "e0007362ae4002e7ce38bc9cf5f17b71f3fc6750", default_window_type = "float" }
