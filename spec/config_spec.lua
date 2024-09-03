@@ -6,7 +6,7 @@ describe("initial plugin config", function()
 
 		assert.are.same(config.request.api_key, os.getenv("TODOIST_API_KEY"))
 		assert.are.same(config.storage.project_file_path, vim.fn.stdpath("cache") .. "/Todoist/todoist.projects")
-		assert.are.same(config.storage.response_path, vim.fn.stdpath("cache") .. "/Todoist/todoist.json")
+		assert.are.same(config.storage.response_path, vim.fn.stdpath("cache") .. "/Todoist/full_todoist_projects.json")
 		assert(config.logging)
 		assert(config.ui.indent_on_buf_enter)
 	end)

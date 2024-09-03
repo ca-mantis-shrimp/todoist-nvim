@@ -9,9 +9,9 @@ local print_root_projects = function(response)
 	return response
 end
 
-M.add_project_list_lines = function(response)
+M.add_project_list_lines = function(opts)
 	return util.run_pipeline({
-		data = vim.deepcopy(response),
+		data = vim.deepcopy(opts),
 		pipeline = {
 			transformations.add_comments_to_projects,
 			transformations.add_sections_to_projects,

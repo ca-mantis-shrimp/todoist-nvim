@@ -1,5 +1,9 @@
 local M = {}
 
+M.extract_table_from_json = function(path)
+	return vim.json.decode(vim.iter(io.lines(path)):join("\n"))
+end
+
 M.write_file = function(path, content)
 	assert(type(content) == "table", "Content needs to be table of strings", tostring(content))
 

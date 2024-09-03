@@ -10,7 +10,7 @@ M.config = function(opts)
 			request = { api_key = os.getenv("TODOIST_API_KEY"), provider = "plenary.curl" },
 			storage = {
 				project_file_path = default_cache_dir .. "/Todoist/todoist.projects",
-				response_path = default_cache_dir .. "/Todoist/todoist.json",
+				response_path = default_cache_dir .. "/Todoist/full_todoist_projects.json",
 			},
 			ui = { default_window_type = "active_window", indent_on_buf_enter = true },
 			logging = true,

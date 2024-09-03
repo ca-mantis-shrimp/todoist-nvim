@@ -3,16 +3,18 @@ local utils = require("Todoist.util")
 
 local M = {}
 
-M.get_full_project_sync_response = function(opts)
+M.get_project_sync_response = function(opts)
+	local request_provider = require(opts.request.provider)
+
 	assert(
-		opts.request.api_key,
-		"API key must not be nil for request to work, please either set the 'TODOIST_API_KEY' environment variable or the `api_key` key in the config options"
+		request_provider.post,
+		"Provider must support the post function to properly interact with the sync API for todoist"
 	)
 	return utils.run_pipeline({
 		data = opts,
 		pipeline = {
-			requests.create_project_full_sync_request,
-			require(tostring(opts.request.provider)).post,
+			requests.create_project_sync_request,
+			request_provider.post,
 			requests.process_response,
 		},
 	})

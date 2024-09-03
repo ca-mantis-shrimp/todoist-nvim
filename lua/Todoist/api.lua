@@ -2,15 +2,23 @@ local sync_api = require("Todoist.sync")
 local model = require("Todoist.model")
 local M = {}
 
-M.send_full_sync_request = function(opts)
-	local todoist_types = sync_api.get_full_project_sync_response(opts)
+M.send_sync_request = function(opts)
+	opts_copy = vim.deepcopy(opts)
+	if opts_copy.response then
+		opts_copy.response =
+			vim.tbl_deep_extend("force", opts_copy.response, sync_api.get_project_sync_response(opts_copy))
+	else
+		opts_copy.response = sync_api.get_project_sync_response(opts_copy)
+	end
 
-	return todoist_types
+	return opts_copy
 end
 M.get_project_lines = function(opts)
-	local updated_response = model.add_project_list_lines(opts)
+	local opts_copy = vim.deepcopy(opts)
 
-	return updated_response.lines
+	assert(opts_copy.response, "need a response to analyze for project lines")
+
+	return model.add_project_list_lines(opts_copy)
 end
 
 return M

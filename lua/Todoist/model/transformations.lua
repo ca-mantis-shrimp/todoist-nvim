@@ -44,75 +44,75 @@ add_project_lines = function(project)
 	return lines
 end
 
-M.add_comments_to_projects = function(response)
+M.add_comments_to_projects = function(opts)
 	local add_comments_to_project = function(project)
 		local is_project_comment = function(potential_comment)
 			return potential_comment.project_id == project.id
 		end
 
-		project.comments = vim.iter(response.project_notes):filter(is_project_comment):totable()
+		project.comments = vim.iter(opts.response.project_notes):filter(is_project_comment):totable()
 
 		return project
 	end
 
-	if response.project_notes then
-		response.projects = vim.iter(response.projects):map(add_comments_to_project):totable()
+	if opts.response.project_notes then
+		opts.response.projects = vim.iter(opts.response.projects):map(add_comments_to_project):totable()
 	end
 
-	return response
+	return opts
 end
 
-M.add_sections_to_projects = function(response)
+M.add_sections_to_projects = function(opts)
 	local add_sections_to_project = function(project)
 		local is_project_section = function(potential_section)
 			return potential_section.project_id == project.id
 		end
 
-		project.sections = vim.iter(response.sections):filter(is_project_section):totable()
+		project.sections = vim.iter(opts.response.sections):filter(is_project_section):totable()
 
 		return project
 	end
 
-	if response.sections then
-		response.projects = vim.iter(response.projects):map(add_sections_to_project):totable()
+	if opts.response.sections then
+		opts.response.projects = vim.iter(opts.response.projects):map(add_sections_to_project):totable()
 	end
 
-	return response
+	return opts
 end
 
-M.add_children_to_projects = function(response)
+M.add_children_to_projects = function(opts)
 	local add_children = function(project)
 		local is_child_project = function(potential_child)
 			return potential_child.parent_id == project.id
 		end
-		project.children = vim.iter(response.projects):filter(is_child_project):totable()
+		project.children = vim.iter(opts.response.projects):filter(is_child_project):totable()
 
 		return project
 	end
 
-	response.projects = vim.iter(response.projects):map(add_children):totable()
+	opts.response.projects = vim.iter(opts.response.projects):map(add_children):totable()
 
-	return response
+	return opts
 end
 
-M.add_root_project_list = function(response)
-	local root_projects = vim.iter(response.projects):filter(is_root_project):map(add_root_depth):totable()
+M.add_root_project_list = function(opts)
+	local root_projects = vim.iter(opts.response.projects):filter(is_root_project):map(add_root_depth):totable()
 
 	table.sort(root_projects, is_higher_child_order)
 
-	response.root_projects = root_projects
+	opts.root_projects = root_projects
 
-	return response
+	return opts
 end
 
-M.add_project_depth = function(response)
+M.add_project_depth = function(opts)
 	local set_project_depth
 	set_project_depth = function(project)
 		local is_parent_project = function(potential_parent)
 			return potential_parent.id == project.parent_id
 		end
 		if project.parent_id and project.parent_id ~= vim.NIL then
-			local parent_project = vim.iter(response.projects):find(is_parent_project)
+			local parent_project = vim.iter(opts.response.projects):find(is_parent_project)
 
 			assert(
 				parent_project,
@@ -135,17 +135,17 @@ M.add_project_depth = function(response)
 		return project
 	end
 
-	response.root_projects = vim.iter(response.root_projects):map(set_project_depth):totable()
+	opts.root_projects = vim.iter(opts.root_projects):map(set_project_depth):totable()
 
-	return response
+	return opts
 end
 
-M.add_project_list_lines = function(response)
-	response.lines = vim.iter(response.root_projects):map(add_project_lines):flatten(6):totable()
+M.add_project_list_lines = function(opts)
+	opts.lines = vim.iter(opts.root_projects):map(add_project_lines):flatten(6):totable()
 
-	table.insert(response.lines, "@" .. response.sync_token)
+	table.insert(opts.lines, "@" .. opts.response.sync_token)
 
-	return response
+	return opts
 end
 
 return M
