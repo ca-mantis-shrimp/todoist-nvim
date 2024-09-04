@@ -1,0 +1,7 @@
+POST https://api.todoist.com/sync/v9/sync
+Authorization: Bearer {{TODOIST_TEST_API_KEY}}
+
+{
+	"sync_token" : "LMvwxZ6d1V564s8883gASbbX2BbKb0IPFP-DJkxHtYjy5ScooEA5WaSMMC9f4eFp5d3TXLEuu9rdAGqTjNX5JFwHBvcXL8oE5XMdokLtU1vY4A",
+	"resource_types" : ["projects", "project_notes", "sections"]
+}

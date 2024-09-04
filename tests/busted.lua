@@ -5,6 +5,8 @@ load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/ma
 
 require("lazy.minit").busted({
 	spec = {
+		{ "ca-mantis-shrimp/tree-sitter-projects" },
 		{ "nvim-lua/plenary.nvim", lazy = true },
+		{ "nvim-treesitter/nvim-treesitter", lazy = true },
 	},
 })

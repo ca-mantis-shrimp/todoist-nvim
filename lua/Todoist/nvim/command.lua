@@ -15,7 +15,6 @@ M.create_all_project_commands = function(opts)
 
 		io.write(opts.storage.response_path, vim.json.encode(opts_with_response.response))
 
-		print(vim.inspect(opts_with_response))
 		local opts_with_lines = api.get_project_lines(opts_with_response)
 
 		filesystem.write_file(opts.storage.project_file_path, opts_with_lines.lines)
