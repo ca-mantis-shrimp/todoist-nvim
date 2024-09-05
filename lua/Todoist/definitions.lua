@@ -6,8 +6,8 @@ local M = {}
 local path_separator = util.get_path_separator()
 local script_dir = util.get_script_dir()
 
-local get_root_dir = function(script_dir, path_separator)
-	local path_chunks = vim.fn.split(vim.copy(script_dir), path_separator)
+local get_root_dir = function(current_script_dir, current_path_separator)
+	local path_chunks = vim.fn.split(vim.copy(current_script_dir), current_path_separator)
 	table.remove(path_chunks, table.maxn(path_chunks))
 	table.remove(path_chunks, table.maxn(path_chunks))
 
