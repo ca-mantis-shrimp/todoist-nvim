@@ -29,24 +29,26 @@ local test_project = {
 describe("converting Todoist Data into the lines", function()
 	it("can convert a dictionary of projects and comments as nodes", function()
 		local types = {
-			projects = test_project,
-			project_notes = {
-				{
-					content = "test comment",
-					id = "2992679862",
-					project_id = "220474322",
-					is_deleted = false,
+			response = {
+				projects = test_project,
+				project_notes = {
+					{
+						content = "test comment",
+						id = "2992679862",
+						project_id = "220474322",
+						is_deleted = false,
+					},
 				},
-			},
-			sections = {
-				{
-					id = "2182392",
-					name = "A section",
-					project_id = "220474322",
-					section_order = 0,
+				sections = {
+					{
+						id = "2182392",
+						name = "A section",
+						project_id = "220474322",
+						section_order = 0,
+					},
 				},
+				sync_token = "test",
 			},
-			sync_token = "test",
 		}
 		local expected_output = {
 			"# Inbox|>220474322",

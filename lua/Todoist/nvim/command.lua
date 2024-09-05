@@ -13,7 +13,7 @@ M.create_all_project_commands = function(opts)
 
 		local opts_with_response = api.send_sync_request(opts)
 
-		io.write(opts.storage.response_path, vim.json.encode(opts_with_response.response))
+		io.output(opts.storage.response_path):write(vim.json.encode(opts_with_response.response))
 
 		local opts_with_lines = api.get_project_lines(opts_with_response)
 

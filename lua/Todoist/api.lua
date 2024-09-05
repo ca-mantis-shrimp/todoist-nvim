@@ -3,7 +3,7 @@ local model = require("Todoist.model")
 local M = {}
 
 M.send_sync_request = function(opts)
-	opts_copy = vim.deepcopy(opts)
+	local opts_copy = vim.deepcopy(opts)
 	if opts_copy.response then
 		opts_copy.response =
 			vim.tbl_deep_extend("force", opts_copy.response, sync_api.get_project_sync_response(opts_copy))

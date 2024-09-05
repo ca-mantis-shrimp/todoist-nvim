@@ -26,7 +26,7 @@ require("lazy.minit").busted({
 				}
 
 				if not ts_parsers.has_parser("projects") then
-					vim.cmd("TSInstall projects")
+					vim.cmd("TSInstallSync projects")
 				end
 			end,
 		},

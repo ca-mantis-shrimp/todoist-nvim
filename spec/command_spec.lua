@@ -17,7 +17,7 @@ describe("testing the Ex commands defined for the Plugin", function()
 		})
 
 		commands.create_all_project_commands(opts)
-		vim.cmd.TodoistFullSync()
+		vim.cmd.TodoistSync()
 
 		local success, _ = pcall(io.open, opts.storage.response_path, "r")
 

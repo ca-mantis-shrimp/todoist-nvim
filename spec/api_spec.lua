@@ -6,27 +6,30 @@ describe("Test Main Todoist API", function()
 	it("Can get the full sync response", function()
 		local config = {
 			request = { api_key = api_key, provider = "plenary.curl" },
+			storage = { response_file_path = "" },
 		}
 
-		local response = todoist_api.send_full_sync_request(config)
+		local response = todoist_api.send_sync_request(config)
 
-		assert.are.same(#response.projects, 2)
+		assert.are.same(#response.response.projects, 2)
 	end)
 	it("Can turn a response into tree lines", function()
-		local response = {
-			projects = {
-				{ id = "1", name = "Inbox", child_order = 0 },
-				{ id = "2", name = "Test Projet", child_order = 1 },
-				{ id = "3", name = "Child Project", parent_id = "2", child_order = 2 },
+		local opts = {
+			response = {
+				projects = {
+					{ id = "1", name = "Inbox", child_order = 0 },
+					{ id = "2", name = "Test Projet", child_order = 1 },
+					{ id = "3", name = "Child Project", parent_id = "2", child_order = 2 },
+				},
+				project_notes = {
+					{ id = "4", content = "Item 1", project_id = "1", child_order = 0 },
+					{ id = "5", content = "Item 2", project_id = "2", child_order = 1 },
+				},
+				sections = {
+					{ id = "6", name = "Section 1", project_id = "2", child_order = 0 },
+				},
+				sync_token = "100",
 			},
-			project_notes = {
-				{ id = "4", content = "Item 1", project_id = "1", child_order = 0 },
-				{ id = "5", content = "Item 2", project_id = "2", child_order = 1 },
-			},
-			sections = {
-				{ id = "6", name = "Section 1", project_id = "2", child_order = 0 },
-			},
-			sync_token = "100",
 		}
 
 		local expected_lines = {
@@ -39,8 +42,8 @@ describe("Test Main Todoist API", function()
 			"@100",
 		}
 
-		local lines = todoist_api.get_project_lines(response)
+		local output = todoist_api.get_project_lines(opts)
 
-		assert.are.same(lines, expected_lines)
+		assert.are.same(output.lines, expected_lines)
 	end)
 end)
