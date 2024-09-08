@@ -13,11 +13,16 @@ M.create_all_project_commands = function(opts)
 
 		local opts_with_response = api.send_sync_request(opts)
 
+		-- we have to do it this way otherwise we can run into column limits with very large user profiles
+		-- if it gets really bad, i might need to break each project into its own line to ensure we dont hit limits
 		io.output(opts.storage.response_path):write(
 			"{\n",
-			vim.json.encode(opts_with_response.response.projects) .. "\n",
-			vim.json.encode(opts_with_response.response.project_notes) .. "\n",
-			vim.json.encode(opts_with_response.response.sections) .. "\n",
+			'"full_sync": ' .. vim.json.encode(opts_with_response.response.full_sync) .. ",\n",
+			'"sync_token": ' .. vim.json.encode(opts_with_response.response.sync_token) .. ",\n",
+			'"temp_id_mapping": ' .. vim.json.encode(opts_with_response.response.temp_id_mapping) .. ",\n",
+			'"projects": ' .. vim.json.encode(opts_with_response.response.projects) .. ",\n",
+			'"project_notes": ' .. vim.json.encode(opts_with_response.response.project_notes) .. ",\n",
+			'"sections": ' .. vim.json.encode(opts_with_response.response.sections) .. "\n",
 			"}"
 		)
 
