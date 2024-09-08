@@ -10,16 +10,23 @@ M.length = function(table)
 	return count
 end
 
-M.merge_tables = function(t1, t2)
-	local mergedTable = {}
-	for k, v in pairs(t1) do
-		mergedTable[k] = v
-	end
+-- Need to do it this way for recursive functions
+local tableMerge
+tableMerge = function(t1, t2)
 	for k, v in pairs(t2) do
-		mergedTable[k] = v
+		if type(v) == "table" then
+			if type(t1[k] or false) == "table" then
+				tableMerge(t1[k] or {}, t2[k] or {})
+			else
+				t1[k] = v
+			end
+		else
+			t1[k] = v
+		end
 	end
-	return mergedTable
+	return t1
 end
+M.tableMerge = tableMerge
 
 M.is_win = function()
 	return package.config:sub(1, 1) == "\\"

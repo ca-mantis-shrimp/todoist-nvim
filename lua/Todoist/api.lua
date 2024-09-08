@@ -1,12 +1,13 @@
 local sync_api = require("Todoist.sync")
 local model = require("Todoist.model")
+local util = require("Todoist.util")
 local M = {}
 
 M.send_sync_request = function(opts)
 	local opts_copy = vim.deepcopy(opts)
+
 	if opts_copy.response then
-		opts_copy.response =
-			vim.tbl_deep_extend("force", opts_copy.response, sync_api.get_project_sync_response(opts_copy))
+		opts_copy.response = util.tableMerge(opts_copy.response, sync_api.get_project_sync_response(opts_copy))
 	else
 		opts_copy.response = sync_api.get_project_sync_response(opts_copy)
 	end
