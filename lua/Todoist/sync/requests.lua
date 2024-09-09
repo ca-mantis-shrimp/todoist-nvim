@@ -63,7 +63,7 @@ function M.create_project_sync_request(opts)
 		headers = { Authorization = "Bearer " .. opts.request.api_key },
 		data = {
 			sync_token = sync_token or "*",
-			resource_types = vim.json.encode({ "projects", "project_notes", "sections" }),
+			resource_types = vim.json.encode({ "projects", "notes", "sections" }),
 		},
 		timeout = 100000,
 	}
