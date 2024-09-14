@@ -66,4 +66,46 @@ M.print_and_pass = function(opts)
 	return opts
 end
 
+M.create_persistent_table = function(initial_table)
+	local function create_new_table(old_table, changes)
+		local new_table = {}
+		for k, v in pairs(old_table) do
+			if type(v) == "table" then
+				new_table[k] = create_new_table(v, changes[k] or {})
+			else
+				new_table[k] = changes[k] ~= nil and changes[k] or v
+			end
+		end
+		for k, v in pairs(changes) do
+			if old_table[k] == nil then
+				new_table[k] = v
+			end
+		end
+		return new_table
+	end
+
+	local persistent_table = {
+		_data = initial_table or {},
+		set = function(self, key, value)
+			local changes = { [key] = value }
+			return M.create_persistent_table(create_new_table(self._data, changes))
+		end,
+		get = function(self, key)
+			return self._data[key]
+		end,
+		to_table = function(self)
+			return self._data
+		end,
+	}
+
+	return setmetatable(persistent_table, {
+		__index = function(t, k)
+			return t._data[k]
+		end,
+		__newindex = function(_, _, _)
+			error("direct modification prohibited, please use proper set")
+		end,
+	})
+end
+
 return M
