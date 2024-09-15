@@ -4,22 +4,21 @@ local util = require("Todoist.util")
 local M = {}
 
 M.send_sync_request = function(opts)
-	local opts_copy = vim.deepcopy(opts)
+	local updated_opts
 
-	if opts_copy.response then
-		opts_copy.response = util.tableMerge(opts_copy.response, sync_api.get_project_sync_response(opts_copy))
+	-- Either we do an incremental sync if we have a response, otherwise we just do a full sync
+	if opts.response then
+		updated_opts = opts:set("response", util.tableMerge(opts.response, sync_api.get_project_sync_response(opts)))
 	else
-		opts_copy.response = sync_api.get_project_sync_response(opts_copy)
+		updated_opts = opts:set("response", sync_api.get_project_sync_response(opts))
 	end
 
-	return opts_copy
+	return updated_opts
 end
 M.get_project_lines = function(opts)
-	local opts_copy = vim.deepcopy(opts)
+	assert(opts.response, "need a response to analyze for project lines")
 
-	assert(opts_copy.response, "need a response to analyze for project lines")
-
-	return model.add_project_list_lines(opts_copy)
+	return model.add_project_list_lines(opts)
 end
 
 return M

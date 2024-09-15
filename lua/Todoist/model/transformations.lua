@@ -50,16 +50,17 @@ M.add_comments_to_projects = function(opts)
 			return potential_comment.project_id == project.id
 		end
 
-		project.comments = vim.iter(opts.response.project_notes):filter(is_project_comment):totable()
-
-		return project
+		return project:set("comments", vim.iter(opts.response.project_notes):filter(is_project_comment):totable())
 	end
 
 	if opts.response.project_notes then
-		opts.response.projects = vim.iter(opts.response.projects):map(add_comments_to_project):totable()
+		local projects_with_notes = opts:set(
+			"response",
+			opts.response:set("projects", vim.iter(opts.response.projects):map(add_comments_to_project):totable())
+		)
 	end
 
-	return opts
+	return projects_with_notes or opts
 end
 
 M.add_sections_to_projects = function(opts)
@@ -68,16 +69,17 @@ M.add_sections_to_projects = function(opts)
 			return potential_section.project_id == project.id
 		end
 
-		project.sections = vim.iter(opts.response.sections):filter(is_project_section):totable()
-
-		return project
+		return project:set("sections", vim.iter(opts.response.sections):filter(is_project_section):totable())
 	end
 
 	if opts.response.sections then
-		opts.response.projects = vim.iter(opts.response.projects):map(add_sections_to_project):totable()
+		local opts_with_sections = opts:set(
+			"response",
+			opts.response:set("projects", vim.iter(opts.response.projects):map(add_sections_to_project):totable())
+		)
 	end
 
-	return opts
+	return opts_with_sections or opts
 end
 
 M.add_children_to_projects = function(opts)
@@ -85,14 +87,14 @@ M.add_children_to_projects = function(opts)
 		local is_child_project = function(potential_child)
 			return potential_child.parent_id == project.id
 		end
-		project.children = vim.iter(opts.response.projects):filter(is_child_project):totable()
 
-		return project
+		return project:set("children", vim.iter(opts.response.projects):filter(is_child_project):totable())
 	end
 
-	opts.response.projects = vim.iter(opts.response.projects):map(add_children):totable()
-
-	return opts
+	return opts:set(
+		"response",
+		opts.response:set("projects", vim.iter(opts.response.projects):map(add_children):totable())
+	)
 end
 
 M.add_root_project_list = function(opts)

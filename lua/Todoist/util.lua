@@ -13,18 +13,22 @@ end
 -- Need to do it this way for recursive functions
 local tableMerge
 tableMerge = function(t1, t2)
+	local result = {}
+	for k, v in pairs(t1) do
+		result[k] = v
+	end
 	for k, v in pairs(t2) do
 		if type(v) == "table" then
-			if type(t1[k] or false) == "table" then
-				tableMerge(t1[k] or {}, t2[k] or {})
+			if type(result[k] or false) == "table" then
+				result[k] = tableMerge(result[k] or {}, v)
 			else
-				t1[k] = v
+				result[k] = tableMerge({}, v)
 			end
 		else
-			t1[k] = v
+			result[k] = v
 		end
 	end
-	return t1
+	return result
 end
 M.tableMerge = tableMerge
 
@@ -95,6 +99,9 @@ M.create_persistent_table = function(initial_table)
 		end,
 		to_table = function(self)
 			return self._data
+		end,
+		merge = function(self, other_table)
+			return M.create_persistent_table(M.tableMerge(self._data, other_table))
 		end,
 	}
 

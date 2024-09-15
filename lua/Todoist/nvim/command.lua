@@ -6,12 +6,13 @@ local M = {}
 M.create_all_project_commands = function(opts)
 	vim.api.nvim_create_user_command("TodoistSync", function()
 		local file_handle = io.open(opts.storage.response_path, "r")
-
+		print(vim.inspect(opts))
+		local opts_with_file
 		if file_handle and file_handle:lines("*l") then
-			opts.response = filesystem.extract_table_from_json(opts.storage.response_path)
+			opts_with_file = opts:set("response", filesystem.extract_table_from_json(opts.storage.response_path))
 		end
 
-		local opts_with_response = api.send_sync_request(opts)
+		local opts_with_response = api.send_sync_request(opts_with_file or opts)
 
 		io.output(opts.storage.response_path):write(vim.json.encode(opts_with_response.response))
 
