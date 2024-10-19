@@ -54,5 +54,7 @@ M.get_project_lines = function(project)
   end
   return lines
 end
+M.add_comments_to_projects = function(opts)
+end
 M.add_project_lines({comments = nil, depth = 0, name = "test-proj", id = 2421})
 return M

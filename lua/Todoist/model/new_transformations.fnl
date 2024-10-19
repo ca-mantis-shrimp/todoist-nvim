@@ -37,6 +37,12 @@
     (M.append_list_lines lines project.children M.add_project_lines))
   lines)
 
+(fn M.add_comments_to_projects [opts]
+  (let [add_comments_to_project (fn [project]
+                                  (local is_project_comment
+                                         #(= $1.project_id project.id))
+                                  (icollect [_ value (ipairs opts.response.projects)]))]))
+
 (M.add_project_lines {:comments nil :depth 0 :name :test-proj :id 2421})
 
 M
