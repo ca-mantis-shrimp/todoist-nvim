@@ -1,40 +1,36 @@
 -- [nfnl] Compiled from lua/Todoist/model/new_transformations.fnl by https://github.com/Olical/nfnl, do not edit.
 local M = {}
-M.add_root_depth = function(project)
-  project["depth"] = 0
-  return project
-end
-M.is_root_project = function(project)
+local function is_root_project(project)
   return (not project.parent_id or (project.parent_id == _G.vim.NIL))
 end
-M.is_project_comment = function(project, todoist_comment)
+local function is_project_comment(project, todoist_comment)
   return (project.id == todoist_comment.project_id)
 end
-M.is_project_section = function(project, section)
+local function is_project_section(project, section)
   return (project.id == section.project_id)
 end
-M.is_child_project = function(project, potential_child)
+local function is_child_project(project, potential_child)
   return (project.id == potential_child.parent_id)
 end
-M.is_parent_project = function(project, potential_parent)
+local function is_parent_project(project, potential_parent)
   return (project.parent_id == potential_parent.id)
 end
-M.is_higher_child_order = function(type_1, type_2)
+local function is_higher_child_order(type_1, type_2)
   return (type_1.child_order < type_2.child_order)
 end
-M.get_project_str = function(project)
+local function get_project_str(project)
   return (_G.string.rep("#", (project.depth + 1)) .. " " .. project.name .. "|>" .. project.id)
 end
-M.get_comment_str = function(todoist_comment)
+local function get_comment_str(todoist_comment)
   return ("+ " .. todoist_comment.content .. "|>" .. todoist_comment.id)
 end
-M.get_section_str = function(section)
+local function get_section_str(section)
   return ("& " .. section.name .. "|>" .. section.id)
 end
-M.list_is_populated = function(list)
+local function list_is_populated(list)
   return (list and (#list > 0))
 end
-M.add_list_to_project = function(project, list_name, list, checker)
+local function add_list_to_project(project, list_name, list, checker)
   if M.list_is_populated(list) then
     local _1_
     do
@@ -55,77 +51,20 @@ M.add_list_to_project = function(project, list_name, list, checker)
       end
       _1_ = tbl_21_auto
     end
-    project[list_name] = _1_
+    project[list_name] = _G.table.sort(_1_, is_higher_child_order)
     return nil
   else
     return nil
   end
 end
-M.add_lists_to_projects = function(opts)
-  for _, project in ipairs(opts.response.projects) do
-    M.add_list_to_project(project, "children", opts.response.projects, M.is_project_child)
-    local _6_
-    do
-      local t_5_ = opts
-      if (nil ~= t_5_) then
-        t_5_ = t_5_.response
-      else
-      end
-      if (nil ~= t_5_) then
-        t_5_ = t_5_.comments
-      else
-      end
-      _6_ = t_5_
-    end
-    M.add_list_to_project(project, "comments", _6_, M.is_project_comment)
-    local _10_
-    do
-      local t_9_ = opts
-      if (nil ~= t_9_) then
-        t_9_ = t_9_.response
-      else
-      end
-      if (nil ~= t_9_) then
-        t_9_ = t_9_.sections
-      else
-      end
-      _10_ = t_9_
-    end
-    M.add_list_to_project(project, "sections", _10_, M.is_project_section)
-  end
-  return opts
-end
-M.add_root_project_list = function(opts)
-  local _13_
-  do
-    local tbl_21_auto = {}
-    local i_22_auto = 0
-    for _, project in ipairs(opts.response.projects) do
-      local val_23_auto
-      if M.is_root_project(project) then
-        val_23_auto = project
-      else
-        val_23_auto = nil
-      end
-      if (nil ~= val_23_auto) then
-        i_22_auto = (i_22_auto + 1)
-        tbl_21_auto[i_22_auto] = val_23_auto
-      else
-      end
-    end
-    _13_ = tbl_21_auto
-  end
-  opts["root_projects"] = _13_
-  return opts
-end
-M.add_depth_to_root_project = function(project, projects)
-  local _16_
+local function add_depth_to_project(project, projects)
+  local _5_
   do
     local tbl_21_auto = {}
     local i_22_auto = 0
     for _, potential_parent in ipairs(projects) do
       local val_23_auto
-      if M.is_project_parent(project, potential_parent) then
+      if is_parent_project(project, potential_parent) then
         val_23_auto = potential_parent
       else
         val_23_auto = nil
@@ -136,26 +75,20 @@ M.add_depth_to_root_project = function(project, projects)
       else
       end
     end
-    _16_ = tbl_21_auto
+    _5_ = tbl_21_auto
   end
-  project["depth"][((_16_[1] + "depth") or 1)] = 0
-  if M.list_is_populated(project.children) then
+  project["depth"][((_5_[1] + "depth") or 1)] = 0
+  if list_is_populated(project.children) then
     for _, child in ipairs(project.children) do
-      M.add_depth_to_project(child, projects)
+      add_depth_to_project(child, projects)
     end
   else
   end
   return project
 end
-M.add_depth_to_root_projects = function(opts)
-  for _, project in ipairs(opts.response.root_projects) do
-    M.add_depth_to_root_project(project, opts.response.projects)
-  end
-  return nil
-end
-M.append_list_lines = function(lines, list, str_generator)
-  if M.list_is_populated(list) then
-    local function _20_()
+local function append_list_lines(lines, list, str_generator)
+  if list_is_populated(list) then
+    local function _9_()
       local tbl_21_auto = {}
       local i_22_auto = 0
       for _, value in ipairs(list) do
@@ -168,34 +101,69 @@ M.append_list_lines = function(lines, list, str_generator)
       end
       return tbl_21_auto
     end
-    return table.insert(lines, _G.unpack(_20_()))
+    return table.insert(lines, _G.unpack(_9_()))
   else
     return nil
   end
 end
-M.get_project_lines = function(project)
-  local lines = {M.get_project_str(project)}
-  M.append_list_lines(lines, project.sections, M.get_section_str)
-  M.append_list_lines(lines, project.comments, M.get_comment_str)
-  M.append_list_lines(lines, project.children, M.add_project_lines)
+local function get_project_lines(project)
+  local lines = {get_project_str(project)}
+  append_list_lines(lines, project.sections, get_section_str)
+  append_list_lines(lines, project.comments, get_comment_str)
+  append_list_lines(lines, project.children, get_project_lines)
   return lines
 end
-M.add_todoist_lines = function(opts)
-  local _23_
+local function add_depth_to_root_projects(root_projects, projects)
+  for _, project in ipairs(root_projects) do
+    add_depth_to_project(project, projects)
+  end
+  return root_projects
+end
+local function get_expanded_projects(projects, comments, sections)
+  for _, project in ipairs(projects) do
+    add_list_to_project(project, "children", projects, is_child_project)
+    add_list_to_project(project, "comments", comments, is_project_comment)
+    add_list_to_project(project, "sections", sections, is_project_section)
+  end
+  return projects
+end
+local function get_root_project_list(projects)
+  local root_projects
+  local _12_
   do
     local tbl_21_auto = {}
     local i_22_auto = 0
-    for _, project in ipairs(opts.response.root_projects) do
-      local val_23_auto = _G.unpack(M.get_project_lines(project))
+    for _, project in ipairs(projects) do
+      local val_23_auto
+      if is_root_project(project) then
+        val_23_auto = project
+      else
+        val_23_auto = nil
+      end
       if (nil ~= val_23_auto) then
         i_22_auto = (i_22_auto + 1)
         tbl_21_auto[i_22_auto] = val_23_auto
       else
       end
     end
-    _23_ = tbl_21_auto
+    _12_ = tbl_21_auto
   end
-  opts["lines"] = _23_
-  return opts
+  root_projects = _G.table.sort(_12_, is_higher_child_order)
+  return add_depth_to_root_projects(root_projects, projects)
+end
+M.get_todoist_lines = function(projects, comments, sections)
+  local expanded_projects = get_expanded_projects(projects, comments, sections)
+  local root_projects = get_root_project_list(expanded_projects)
+  local tbl_21_auto = {}
+  local i_22_auto = 0
+  for _, project in ipairs(root_projects) do
+    local val_23_auto = _G.unpack(get_project_lines(project))
+    if (nil ~= val_23_auto) then
+      i_22_auto = (i_22_auto + 1)
+      tbl_21_auto[i_22_auto] = val_23_auto
+    else
+    end
+  end
+  return tbl_21_auto
 end
 return M
