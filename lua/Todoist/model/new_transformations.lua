@@ -1,7 +1,29 @@
 -- [nfnl] Compiled from lua/Todoist/model/new_transformations.fnl by https://github.com/Olical/nfnl, do not edit.
 local M = {}
 local function is_root_project(project)
-  return (not project.parent_id or (project.parent_id == _G.vim.NIL))
+  local _2_
+  do
+    local t_1_ = project
+    if (nil ~= t_1_) then
+      t_1_ = t_1_.parent_id
+    else
+    end
+    _2_ = t_1_
+  end
+  local or_4_ = (_2_ == nil)
+  if not or_4_ then
+    local _6_
+    do
+      local t_5_ = project
+      if (nil ~= t_5_) then
+        t_5_ = t_5_.parent_id
+      else
+      end
+      _6_ = t_5_
+    end
+    or_4_ = (_6_ == _G.vim.NIL)
+  end
+  return or_4_
 end
 local function is_project_comment(project, todoist_comment)
   return (project.id == todoist_comment.project_id)
@@ -30,15 +52,25 @@ end
 local function list_is_populated(list)
   return (list and (#list > 0))
 end
-local function add_depth_to_project(project, projects)
-  local _1_
+local function add_depth_to_project(project, depth)
+  project["depth"] = depth
+  if list_is_populated(project.children) then
+    for _, child in ipairs(project.children) do
+      add_depth_to_project(child, (depth + 1))
+    end
+  else
+  end
+  return project
+end
+local function get_root_project_list(projects)
+  local root_projects
   do
     local tbl_21_auto = {}
     local i_22_auto = 0
-    for _, potential_parent in ipairs(projects) do
+    for _, project in ipairs(projects) do
       local val_23_auto
-      if is_parent_project(project, potential_parent) then
-        val_23_auto = potential_parent
+      if is_root_project(project) then
+        val_23_auto = add_depth_to_project(project, 0)
       else
         val_23_auto = nil
       end
@@ -48,53 +80,47 @@ local function add_depth_to_project(project, projects)
       else
       end
     end
-    _1_ = tbl_21_auto
+    root_projects = tbl_21_auto
   end
-  project["depth"][((_1_[1] + "depth") or 1)] = 0
-  if list_is_populated(project.children) then
-    for _, child in ipairs(project.children) do
-      add_depth_to_project(child, projects)
-    end
+  if (#root_projects > 1) then
+    table.sort(root_projects, is_higher_child_order)
   else
-  end
-  return project
-end
-local function append_list_lines(lines, list, str_generator)
-  if list_is_populated(list) then
-    local function _5_()
-      local tbl_21_auto = {}
-      local i_22_auto = 0
-      for _, value in ipairs(list) do
-        local val_23_auto = str_generator(value)
-        if (nil ~= val_23_auto) then
-          i_22_auto = (i_22_auto + 1)
-          tbl_21_auto[i_22_auto] = val_23_auto
-        else
-        end
-      end
-      return tbl_21_auto
-    end
-    return table.insert(lines, _G.unpack(_5_()))
-  else
-    return nil
-  end
-end
-local function get_project_lines(project)
-  local lines = {get_project_str(project)}
-  append_list_lines(lines, project.sections, get_section_str)
-  append_list_lines(lines, project.comments, get_comment_str)
-  append_list_lines(lines, project.children, get_project_lines)
-  return lines
-end
-local function add_depth_to_root_projects(root_projects, projects)
-  for _, project in ipairs(root_projects) do
-    add_depth_to_project(project, projects)
   end
   return root_projects
 end
+local function get_list_lines(_3flist, str_generator)
+  local tbl_21_auto = {}
+  local i_22_auto = 0
+  for _, value in ipairs(_3flist) do
+    local val_23_auto = str_generator(value)
+    if (nil ~= val_23_auto) then
+      i_22_auto = (i_22_auto + 1)
+      tbl_21_auto[i_22_auto] = val_23_auto
+    else
+    end
+  end
+  return tbl_21_auto
+end
+local function get_project_lines(project)
+  local lines = {get_project_str(project)}
+  if list_is_populated(project.sections) then
+    table.insert(lines, _G.unpack(get_list_lines(project.sections, get_section_str)))
+  else
+  end
+  if list_is_populated(project.comments) then
+    table.insert(lines, _G.unpack(get_list_lines(project.comments, get_comment_str)))
+  else
+  end
+  if list_is_populated(project.children) then
+    table.insert(lines, _G.unpack(get_list_lines(project.children, get_project_lines)))
+  else
+  end
+  return lines
+end
+get_project_lines({child_order = 2, children = {{child_order = 3, children = {}, comments = {{content = "test", id = 3, project_id = 3}}, depth = 1, id = 3, name = "work", parent_id = 2}}, comments = {{content = "test", id = 2, project_id = 2}}, depth = 0, id = 2, name = "work"})
 local function add_list_to_project(project, list_name, list, checker)
   if list_is_populated(list) then
-    local _8_
+    local _16_
     do
       local tbl_21_auto = {}
       local i_22_auto = 0
@@ -111,53 +137,27 @@ local function add_list_to_project(project, list_name, list, checker)
         else
         end
       end
-      _8_ = tbl_21_auto
+      _16_ = tbl_21_auto
     end
-    project[list_name] = _8_
+    project[list_name] = _16_
   else
   end
-  if (#list > 1) then
+  if (list_is_populated(list) and (#list > 1)) then
     table.sort(project[list_name], is_higher_child_order)
   else
   end
   return project
 end
-local function get_expanded_projects(projects, comments, sections)
+local function get_expanded_projects(projects, _3fcomments, _3fsections)
   for _, project in ipairs(projects) do
     add_list_to_project(project, "children", projects, is_child_project)
-    add_list_to_project(project, "comments", comments, is_project_comment)
-    add_list_to_project(project, "sections", sections, is_project_section)
+    add_list_to_project(project, "comments", _3fcomments, is_project_comment)
+    add_list_to_project(project, "sections", _3fsections, is_project_section)
   end
   return projects
 end
-local function get_root_project_list(projects)
-  local root_projects
-  do
-    local tbl_21_auto = {}
-    local i_22_auto = 0
-    for _, project in ipairs(projects) do
-      local val_23_auto
-      if is_root_project(project) then
-        val_23_auto = project
-      else
-        val_23_auto = nil
-      end
-      if (nil ~= val_23_auto) then
-        i_22_auto = (i_22_auto + 1)
-        tbl_21_auto[i_22_auto] = val_23_auto
-      else
-      end
-    end
-    root_projects = tbl_21_auto
-  end
-  if (#root_projects > 1) then
-    table.sort(root_projects, is_higher_child_order)
-  else
-  end
-  return add_depth_to_root_projects(root_projects, projects)
-end
-M.get_todoist_lines = function(projects, comments, sections)
-  local expanded_projects = get_expanded_projects(projects, comments, sections)
+M.get_todoist_lines = function(projects, _3fcomments, _3fsections)
+  local expanded_projects = get_expanded_projects(projects, _3fcomments, _3fsections)
   local root_projects = get_root_project_list(expanded_projects)
   local tbl_21_auto = {}
   local i_22_auto = 0
