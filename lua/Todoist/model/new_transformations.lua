@@ -30,35 +30,8 @@ end
 local function list_is_populated(list)
   return (list and (#list > 0))
 end
-local function add_list_to_project(project, list_name, list, checker)
-  if M.list_is_populated(list) then
-    local _1_
-    do
-      local tbl_21_auto = {}
-      local i_22_auto = 0
-      for _, value in ipairs(list) do
-        local val_23_auto
-        if checker(project, value) then
-          val_23_auto = value
-        else
-          val_23_auto = nil
-        end
-        if (nil ~= val_23_auto) then
-          i_22_auto = (i_22_auto + 1)
-          tbl_21_auto[i_22_auto] = val_23_auto
-        else
-        end
-      end
-      _1_ = tbl_21_auto
-    end
-    project[list_name] = _G.table.sort(_1_, is_higher_child_order)
-    return nil
-  else
-    return nil
-  end
-end
 local function add_depth_to_project(project, projects)
-  local _5_
+  local _1_
   do
     local tbl_21_auto = {}
     local i_22_auto = 0
@@ -75,9 +48,9 @@ local function add_depth_to_project(project, projects)
       else
       end
     end
-    _5_ = tbl_21_auto
+    _1_ = tbl_21_auto
   end
-  project["depth"][((_5_[1] + "depth") or 1)] = 0
+  project["depth"][((_1_[1] + "depth") or 1)] = 0
   if list_is_populated(project.children) then
     for _, child in ipairs(project.children) do
       add_depth_to_project(child, projects)
@@ -88,7 +61,7 @@ local function add_depth_to_project(project, projects)
 end
 local function append_list_lines(lines, list, str_generator)
   if list_is_populated(list) then
-    local function _9_()
+    local function _5_()
       local tbl_21_auto = {}
       local i_22_auto = 0
       for _, value in ipairs(list) do
@@ -101,7 +74,7 @@ local function append_list_lines(lines, list, str_generator)
       end
       return tbl_21_auto
     end
-    return table.insert(lines, _G.unpack(_9_()))
+    return table.insert(lines, _G.unpack(_5_()))
   else
     return nil
   end
@@ -119,6 +92,36 @@ local function add_depth_to_root_projects(root_projects, projects)
   end
   return root_projects
 end
+local function add_list_to_project(project, list_name, list, checker)
+  if list_is_populated(list) then
+    local _8_
+    do
+      local tbl_21_auto = {}
+      local i_22_auto = 0
+      for _, value in ipairs(list) do
+        local val_23_auto
+        if checker(project, value) then
+          val_23_auto = value
+        else
+          val_23_auto = nil
+        end
+        if (nil ~= val_23_auto) then
+          i_22_auto = (i_22_auto + 1)
+          tbl_21_auto[i_22_auto] = val_23_auto
+        else
+        end
+      end
+      _8_ = tbl_21_auto
+    end
+    project[list_name] = _8_
+  else
+  end
+  if (#list > 1) then
+    table.sort(project[list_name], is_higher_child_order)
+  else
+  end
+  return project
+end
 local function get_expanded_projects(projects, comments, sections)
   for _, project in ipairs(projects) do
     add_list_to_project(project, "children", projects, is_child_project)
@@ -129,7 +132,6 @@ local function get_expanded_projects(projects, comments, sections)
 end
 local function get_root_project_list(projects)
   local root_projects
-  local _12_
   do
     local tbl_21_auto = {}
     local i_22_auto = 0
@@ -146,9 +148,12 @@ local function get_root_project_list(projects)
       else
       end
     end
-    _12_ = tbl_21_auto
+    root_projects = tbl_21_auto
   end
-  root_projects = _G.table.sort(_12_, is_higher_child_order)
+  if (#root_projects > 1) then
+    table.sort(root_projects, is_higher_child_order)
+  else
+  end
   return add_depth_to_root_projects(root_projects, projects)
 end
 M.get_todoist_lines = function(projects, comments, sections)

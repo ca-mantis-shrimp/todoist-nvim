@@ -41,15 +41,6 @@
   "returns true if the collection is both non-nil and has atleast one item in it"
   (and list (> (length list) 0)))
 
-(fn add_list_to_project [project list_name list checker]
-  "higher order function that takes a project, a list name, a list, and a checker function, and adds the value to the project if the checker function returns true"
-  (when (M.list_is_populated list)
-    (tset project list_name
-          (_G.table.sort (icollect [_ value (ipairs list)]
-                           (when (checker project value)
-                             value))
-                         is_higher_child_order))))
-
 (fn add_depth_to_project [project projects]
   "add the depth for the root project and all child projects (recursively) if necessary"
   (tset project :depth (or (+ (. (. (icollect [_ potential_parent (ipairs projects)]
@@ -83,6 +74,16 @@
     (add_depth_to_project project projects))
   root_projects)
 
+(fn add_list_to_project [project list_name list checker]
+  "higher order function that takes a project, a list name, a list, and a checker function, and adds the value to the project if the checker function returns true"
+  (when (list_is_populated list)
+    (tset project list_name (icollect [_ value (ipairs list)]
+                              (when (checker project value)
+                                value))))
+  (when (> (length list) 1)
+    (table.sort (. project list_name) is_higher_child_order))
+  project)
+
 (fn get_expanded_projects [projects comments sections]
   "add children stuff to project list"
   (each [_ project (ipairs projects)]
@@ -93,11 +94,11 @@
 
 (fn get_root_project_list [projects]
   "get root projects, sorted and updated with depth"
-  (local root_projects
-         (_G.table.sort (icollect [_ project (ipairs projects)]
-                          (when (is_root_project project)
-                            project))
-                        is_higher_child_order))
+  (local root_projects (icollect [_ project (ipairs projects)]
+                         (when (is_root_project project)
+                           project)))
+  (when (> (length root_projects) 1)
+    (table.sort root_projects is_higher_child_order))
   (add_depth_to_root_projects root_projects projects))
 
 (fn M.get_todoist_lines [projects comments sections]
