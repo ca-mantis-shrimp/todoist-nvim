@@ -17,10 +17,6 @@
   "checks if a project is a child of another project"
   (= project.id potential_child.parent_id))
 
-(fn is_parent_project [project potential_parent]
-  "checks if a project is a child of another project"
-  (= project.parent_id potential_parent.id))
-
 (fn is_higher_child_order [type_1 type_2]
   "checks if the first dictionary has a lower child order than the second"
   (< type_1.child_order type_2.child_order))
@@ -144,19 +140,22 @@
 (fn M.get_todoist_lines [projects ?comments ?sections]
   "given projects comments (optional) and sections (optional), get the equivalent list of strings"
   (let [expanded_projects (get_expanded_projects projects ?comments ?sections)
-        root_projects (get_root_project_list expanded_projects)]
-    (icollect [_ project (ipairs root_projects)]
-      (get_project_lines project))))
+        root_projects (get_root_project_list expanded_projects)
+        lines []
+        todoist_lines (icollect [_ project (ipairs root_projects)]
+                        (get_project_lines project))]
+    (each [_ list (ipairs todoist_lines)]
+      (each [_ line (ipairs list)]
+        (table.insert lines line)))
+    lines))
 
-(M.get_todoist_lines [{:name :inbox :id 1 :child_order 1 :parent_id nil}
-                      {:name :work :id 2 :child_order 2 :parent_id nil}
-                      {:name :work :id 3 :child_order 3 :parent_id 2}]
-                     [{:content :test :id 1 :project_id 1}
-                      {:content :test :id 2 :project_id 2}
-                      {:content :test :id 3 :project_id 3}]
-                     nil)
-
-; [["# inbox|>1" "+ test|>1"] ["# work|>2" "+ test|>2" "## work|>3" "+ test|>3"]]
+;(M.get_todoist_lines [{:name :inbox :id 1 :child_order 1 :parent_id nil}
+;                      {:name :work :id 2 :child_order 2 :parent_id nil}
+;                      {:name :work :id 3 :child_order 3 :parent_id 2}]
+;                     [{:content :test :id 1 :project_id 1}
+;                      {:content :test :id 2 :project_id 2}
+;                      {:content :test :id 3 :project_id 3}]
+;                     nil)
 
 M
 

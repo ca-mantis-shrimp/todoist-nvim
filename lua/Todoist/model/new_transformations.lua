@@ -34,9 +34,6 @@ end
 local function is_child_project(project, potential_child)
   return (project.id == potential_child.parent_id)
 end
-local function is_parent_project(project, potential_parent)
-  return (project.parent_id == potential_parent.id)
-end
 local function is_higher_child_order(type_1, type_2)
   return (type_1.child_order < type_2.child_order)
 end
@@ -166,17 +163,26 @@ end
 M.get_todoist_lines = function(projects, _3fcomments, _3fsections)
   local expanded_projects = get_expanded_projects(projects, _3fcomments, _3fsections)
   local root_projects = get_root_project_list(expanded_projects)
-  local tbl_21_auto = {}
-  local i_22_auto = 0
-  for _, project in ipairs(root_projects) do
-    local val_23_auto = get_project_lines(project)
-    if (nil ~= val_23_auto) then
-      i_22_auto = (i_22_auto + 1)
-      tbl_21_auto[i_22_auto] = val_23_auto
-    else
+  local lines = {}
+  local todoist_lines
+  do
+    local tbl_21_auto = {}
+    local i_22_auto = 0
+    for _, project in ipairs(root_projects) do
+      local val_23_auto = get_project_lines(project)
+      if (nil ~= val_23_auto) then
+        i_22_auto = (i_22_auto + 1)
+        tbl_21_auto[i_22_auto] = val_23_auto
+      else
+      end
+    end
+    todoist_lines = tbl_21_auto
+  end
+  for _, list in ipairs(todoist_lines) do
+    for _0, line in ipairs(list) do
+      table.insert(lines, line)
     end
   end
-  return tbl_21_auto
+  return lines
 end
-M.get_todoist_lines({{name = "inbox", id = 1, child_order = 1, parent_id = nil}, {name = "work", id = 2, child_order = 2, parent_id = nil}, {name = "work", id = 3, child_order = 3, parent_id = 2}}, {{content = "test", id = 1, project_id = 1}, {content = "test", id = 2, project_id = 2}, {content = "test", id = 3, project_id = 3}}, nil)
 return M
