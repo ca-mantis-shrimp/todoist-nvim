@@ -104,20 +104,27 @@ end
 local function get_project_lines(project)
   local lines = {get_project_str(project)}
   if list_is_populated(project.sections) then
-    table.insert(lines, _G.unpack(get_list_lines(project.sections, get_section_str)))
+    for _, section_str in ipairs(get_list_lines(project.sections, get_section_str)) do
+      table.insert(lines, section_str)
+    end
   else
   end
   if list_is_populated(project.comments) then
-    table.insert(lines, _G.unpack(get_list_lines(project.comments, get_comment_str)))
+    for _, comment_str in ipairs(get_list_lines(project.comments, get_comment_str)) do
+      table.insert(lines, comment_str)
+    end
   else
   end
   if list_is_populated(project.children) then
-    table.insert(lines, _G.unpack(get_list_lines(project.children, get_project_lines)))
+    for _, child_project_strs in ipairs(get_list_lines(project.children, get_project_lines)) do
+      for _0, project_str in ipairs(child_project_strs) do
+        table.insert(lines, project_str)
+      end
+    end
   else
   end
   return lines
 end
-get_project_lines({child_order = 2, children = {{child_order = 3, children = {}, comments = {{content = "test", id = 3, project_id = 3}}, depth = 1, id = 3, name = "work", parent_id = 2}}, comments = {{content = "test", id = 2, project_id = 2}}, depth = 0, id = 2, name = "work"})
 local function add_list_to_project(project, list_name, list, checker)
   if list_is_populated(list) then
     local _16_
@@ -162,7 +169,7 @@ M.get_todoist_lines = function(projects, _3fcomments, _3fsections)
   local tbl_21_auto = {}
   local i_22_auto = 0
   for _, project in ipairs(root_projects) do
-    local val_23_auto = _G.unpack(get_project_lines(project))
+    local val_23_auto = get_project_lines(project)
     if (nil ~= val_23_auto) then
       i_22_auto = (i_22_auto + 1)
       tbl_21_auto[i_22_auto] = val_23_auto
@@ -171,4 +178,5 @@ M.get_todoist_lines = function(projects, _3fcomments, _3fsections)
   end
   return tbl_21_auto
 end
+M.get_todoist_lines({{name = "inbox", id = 1, child_order = 1, parent_id = nil}, {name = "work", id = 2, child_order = 2, parent_id = nil}, {name = "work", id = 3, child_order = 3, parent_id = 2}}, {{content = "test", id = 1, project_id = 1}, {content = "test", id = 2, project_id = 2}, {content = "test", id = 3, project_id = 3}}, nil)
 return M

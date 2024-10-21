@@ -89,29 +89,39 @@
   "grabs the list of string lines for the project, as well as all comments, sections, and child projects recursively and returns the list"
   (let [lines [(get_project_str project)]]
     (when (list_is_populated project.sections)
-      (table.insert lines
-                    (_G.unpack (get_list_lines project.sections get_section_str))))
+      (each [_ section_str (ipairs (get_list_lines project.sections
+                                                   get_section_str))]
+        (table.insert lines section_str)))
     (when (list_is_populated project.comments)
-      (table.insert lines
-                    (_G.unpack (get_list_lines project.comments get_comment_str))))
+      (each [_ comment_str (ipairs (get_list_lines project.comments
+                                                   get_comment_str))]
+        (table.insert lines comment_str)))
     (when (list_is_populated project.children)
-      (table.insert lines
-                    (_G.unpack (get_list_lines project.children
-                                               get_project_lines))))
+      (each [_ child_project_strs (ipairs (get_list_lines project.children
+                                                          get_project_lines))]
+        (each [_ project_str (ipairs child_project_strs)]
+          (table.insert lines project_str))))
+    ;for children we need to unpack twice as they are double-nested (this returns a list remember!)
     lines))
 
-(get_project_lines {:child_order 2
-                    :children [{:child_order 3
-                                :children {}
-                                :comments [{:content :test :id 3 :project_id 3}]
-                                :depth 1
-                                :id 3
-                                :name :work
-                                :parent_id 2}]
-                    :comments [{:content :test :id 2 :project_id 2}]
-                    :depth 0
-                    :id 2
-                    :name :work})
+;(get_project_lines {:child_order 2
+;                    :children [{:child_order 3
+;                                :children [{:name :grandchild
+;                                            :id 5
+;                                            :parent_id 3
+;                                            :depth 2}]
+;                                :comments [{:content :test :id 3 :project_id 3}]
+;                                :depth 1
+;                                :id 3
+;                                :name :work
+;                                :parent_id 2}]
+;                    :comments [{:content :test :id 2 :project_id 2}
+;                               {:content :another :id 7 :project_id 3}]
+;                    :depth 0
+;                    :id 2
+;                    :name :work})
+
+; ["# work|>2" "+ test|>2" [["## work|>3" "+ test|>3" [["### grandchild|>5"]]]]]
 
 (fn add_list_to_project [project list_name list checker]
   "higher order function that takes a project, a list name, a list, and a checker function, and adds the value to the project if the checker function returns true"
@@ -136,15 +146,17 @@
   (let [expanded_projects (get_expanded_projects projects ?comments ?sections)
         root_projects (get_root_project_list expanded_projects)]
     (icollect [_ project (ipairs root_projects)]
-      (_G.unpack (get_project_lines project)))))
+      (get_project_lines project))))
 
-;(M.get_todoist_lines [{:name :inbox :id 1 :child_order 1 :parent_id nil}
-;                      {:name :work :id 2 :child_order 2 :parent_id nil}
-;                      {:name :work :id 3 :child_order 3 :parent_id 2}]
-;                     [{:content :test :id 1 :project_id 1}
-;                      {:content :test :id 2 :project_id 2}
-;                      {:content :test :id 3 :project_id 3}]
-;                     nil)
+(M.get_todoist_lines [{:name :inbox :id 1 :child_order 1 :parent_id nil}
+                      {:name :work :id 2 :child_order 2 :parent_id nil}
+                      {:name :work :id 3 :child_order 3 :parent_id 2}]
+                     [{:content :test :id 1 :project_id 1}
+                      {:content :test :id 2 :project_id 2}
+                      {:content :test :id 3 :project_id 3}]
+                     nil)
+
+; [["# inbox|>1" "+ test|>1"] ["# work|>2" "+ test|>2" "## work|>3" "+ test|>3"]]
 
 M
 
