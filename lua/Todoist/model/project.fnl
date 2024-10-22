@@ -22,7 +22,7 @@
   project)
 
 (fn get_expanded_projects [projects ?comments ?sections]
-  "add children stuff to project list"
+  "given a list of projects, add the appropriate comments (optional), sections (optional) and child projects to each project"
   (each [_ project (ipairs projects)]
     (add_list_to_project project :children projects is_child_project)
     (add_list_to_project project :comments ?comments is_project_comment)

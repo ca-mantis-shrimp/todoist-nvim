@@ -6,4 +6,7 @@ end
 M.list_is_populated = function(list)
   return (list and (#list > 0))
 end
+M.list_is_sortable = function(list)
+  return (list and (#list > 1))
+end
 return M

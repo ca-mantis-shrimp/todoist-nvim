@@ -9,5 +9,9 @@
   "returns true if the collection is both non-nil and has atleast one item in it"
   (and list (> (length list) 0)))
 
+(fn M.list_is_sortable [list]
+  "return true if a list is populated AND has more than one entry which may necesitate sorting"
+  (and list (> (length list) 1)))
+
 M
 
