@@ -1,7 +1,7 @@
 -- [nfnl] Compiled from spec/model/init_spec.fnl by https://github.com/Olical/nfnl, do not edit.
 local get_todoist_lines = require("Todoist.model")
-local describe = require("plenary.busted").describe
-local it = require("plenary.busted").it
+local describe = require("busted").describe
+local it = require("busted").it
 local function _1_()
   local function _2_()
     local projects = {{name = "inbox", id = 1, child_order = 1, parent_id = nil}, {name = "work", id = 2, child_order = 2, parent_id = nil}, {name = "work", id = 3, child_order = 3, parent_id = 2}}

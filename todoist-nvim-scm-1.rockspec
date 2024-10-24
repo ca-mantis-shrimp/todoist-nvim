@@ -10,11 +10,17 @@ description = {
 }
 
 source = {
-	url = "git://github.com/ca-mantis-shrimp/Todoist.nvim",
+	url = "git://github.com/ca-mantis-shrimp/todoist-nvim",
 }
 dependencies = {
-	"lua == 5.1",
+	"lua >= 5.1",
 	"jsonschema ~> 0.9.7",
+}
+
+test_dependencies = {
+	"lua >= 5.1",
+	"nlua",
+	"busted",
 }
 
 build = {
