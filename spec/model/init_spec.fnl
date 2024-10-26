@@ -1,6 +1,6 @@
 (local get_todoist_lines (require :Todoist.model))
-(local describe (. (require :busted) :describe))
-(local it (. (require :busted) :it))
+(local describe (. (require :plenary.busted) :describe))
+(local it (. (require :plenary.busted) :it))
 (describe "the main module function for extracting the project lines from the various lists"
           (fn []
             (it "should be able to work without a section view"
