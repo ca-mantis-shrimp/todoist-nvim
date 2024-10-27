@@ -3,5 +3,5 @@ Authorization: Bearer {{TODOIST_API_KEY}}
 
 {
 	"sync_token" : "*",
-	"resource_types" : ["all"]
+	"resource_types" : ["projects"]
 }

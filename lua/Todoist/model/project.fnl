@@ -1,4 +1,4 @@
-(local util (require :Todoist.model.util))
+(local util (require :Todoist.fnl_util))
 (fn is_project_comment [project todoist_comment]
   "checks if a comment belongs to a project"
   (= project.id todoist_comment.project_id))

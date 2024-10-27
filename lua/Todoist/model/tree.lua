@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from lua/Todoist/model/tree.fnl by https://github.com/Olical/nfnl, do not edit.
-local util = require("Todoist.model.util")
+local util = require("Todoist.fnl_util")
 local function is_root_project(project)
   local _2_
   do

@@ -13,19 +13,20 @@
                                    :id 2
                                    :child_order 2
                                    :parent_id nil}
-                                  {:name :work
+                                  {:name :child
                                    :id 3
                                    :child_order 3
                                    :parent_id 2}]
-                        comments [{:content :test :id 1 :project_id 1}
-                                  {:content :test :id 2 :project_id 2}
-                                  {:content :test :id 3 :project_id 3}]
+                        comments [{:content :inbox-comment :id 4 :project_id 1}
+                                  {:content :work-comment :id 5 :project_id 2}
+                                  {:content :child-comment :id 6 :project_id 3}]
                         expected ["# inbox|>1"
-                                  "+ test|>1"
+                                  "+ inbox-comment|>4"
                                   "# work|>2"
-                                  "+ test|>2"
-                                  "## work|>3"
-                                  "+ test|>3"]
+                                  "+ work-comment|>5"
+                                  "## child|>3"
+                                  "+ child-comment|>6"]
                         output (get_todoist_lines projects comments nil)]
-                    (assert.are.same expected output))))))
+                    (assert.are.same expected output))
+                  nil))))
 

@@ -39,10 +39,10 @@
                  :args {: name : parent : child_order : is_favorite}}]
     (_G.vim.json.encode command)))
 
-(fn M.create_project_sync_request [opts]
+(fn M.create_project_sync_request [api_key ?sync_token]
   {:url M.url
-   :headers {:Authorization (.. "Bearer " opts.request.api_key)}
-   :data {:sync_token (or opts.request.sync_token "*")
+   :headers {:Authorization (.. "Bearer " api_key)}
+   :data {:sync_token (or ?sync_token "*")
           :resource_types (_G.vim.json.encode [:projects :notes :sections])
           :timeout 100000}})
 

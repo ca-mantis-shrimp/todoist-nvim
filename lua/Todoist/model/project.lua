@@ -1,5 +1,5 @@
 -- [nfnl] Compiled from lua/Todoist/model/project.fnl by https://github.com/Olical/nfnl, do not edit.
-local util = require("Todoist.model.util")
+local util = require("Todoist.fnl_util")
 local function is_project_comment(project, todoist_comment)
   return (project.id == todoist_comment.project_id)
 end

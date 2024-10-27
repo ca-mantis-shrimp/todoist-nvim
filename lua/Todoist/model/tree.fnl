@@ -1,4 +1,4 @@
-(local util (require :Todoist.model.util))
+(local util (require :Todoist.fnl_util))
 
 (fn is_root_project [project]
   "checks if a project is or is not a root project by checking depth"

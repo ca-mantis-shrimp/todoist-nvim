@@ -1,4 +1,4 @@
-(local util (require :Todoist.model.util))
+(local util (require :Todoist.fnl_util))
 (fn get_project_str [project]
   "return the stringified version from the project"
   (.. (_G.string.rep "#" (+ project.depth 1)) " " project.name "|>" project.id))
@@ -35,24 +35,15 @@
     ;for children we need to unpack twice as they are double-nested (this returns a list remember!)
     lines))
 
-;(get_project_lines {:child_order 2
-;                    :children [{:child_order 3
-;                                :children [{:name :grandchild
-;                                            :id 5
-;                                            :parent_id 3
-;                                            :depth 2}]
-;                                :comments [{:content :test :id 3 :project_id 3}]
-;                                :depth 1
-;                                :id 3
-;                                :name :work
-;                                :parent_id 2}]
-;                    :comments [{:content :test :id 2 :project_id 2}
-;                               {:content :another :id 7 :project_id 3}]
-;                    :depth 0
-;                    :id 2
-;                    :name :work})
+(fn get_todoist_lines [root_projects]
+  "given a root project list, get the lines of the list as a string"
+  (let [lines []
+        todoist_lines (icollect [_ project (ipairs root_projects)]
+                        (get_project_lines project))]
+    (each [_ list (ipairs todoist_lines)]
+      (each [_ line (ipairs list)]
+        (table.insert lines line))) ; we need to unpack the list of lists into a single list of lines
+    lines))
 
-; ["# work|>2" "+ test|>2" [["## work|>3" "+ test|>3" [["### grandchild|>5"]]]]]
-
-get_project_lines
+get_todoist_lines
 
