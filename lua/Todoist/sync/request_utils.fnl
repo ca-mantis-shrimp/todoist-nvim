@@ -46,6 +46,8 @@
           :resource_types (_G.vim.json.encode [:projects :notes :sections])
           :timeout 100000}})
 
+(M.create_project_sync_request :good-key nil)
+
 (fn M.process_response [response]
   (assert (= response.status 200) (. M.response_status_codes response.status))
   (_G.vim.json.decode response.body))

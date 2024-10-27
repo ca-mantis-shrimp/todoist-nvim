@@ -8,6 +8,7 @@ end
 M.create_project_sync_request = function(api_key, _3fsync_token)
   return {url = M.url, headers = {Authorization = ("Bearer " .. api_key)}, data = {sync_token = (_3fsync_token or "*"), resource_types = _G.vim.json.encode({"projects", "notes", "sections"}), timeout = 100000}}
 end
+M.create_project_sync_request("good-key", nil)
 M.process_response = function(response)
   assert((response.status == 200), M.response_status_codes[response.status])
   return _G.vim.json.decode(response.body)
