@@ -7,6 +7,8 @@ version: 1.1.1
 ---
 # Todoist.Nvim
 
+_Project Status_: Project is still under active construction, please only install if you plan to help build out the structures with me, this is not intended for end-users yet
+
 Todoist.nvim is an (relatively) unopinionated wrapper around the Todoists' Sync API with the ability for users to:
 - Review
 - Update
